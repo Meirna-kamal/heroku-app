@@ -1,0 +1,1 @@
+web: gunicorn hrefpandas:app --log-file -
