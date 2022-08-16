@@ -4,9 +4,6 @@ from flask import Flask
 from csv import writer
 import pandas as pd
 
-import arabic_reshaper
-from bidi.algorithm import get_display
-
 app = Flask(__name__)
 api = Api(app)
 
@@ -18,13 +15,6 @@ novel_args.add_argument(
     "المؤلف", type=str, help="Name of the author", required=True)
 novel_args.add_argument(
     "البلد", type=str, help="Country of author", required=True)
-
-
-def arabic_reshape(arabic_word):
-    shape_corrected_word = arabic_reshaper.reshape(arabic_word)
-    direction_corrected_word = get_display(shape_corrected_word)
-    return (direction_corrected_word)
-
 
 def convert_excel_to_df():
     df = pd.read_excel('Final_without_links.xlsx')
@@ -66,12 +56,12 @@ def get_novel(novel_id):
     df = convert_excel_to_df()
     abort_if_index_out_of_range(novel_id, df)
 
-    requested_novel_name = f"{arabic_reshape(df.get('الروايه')[novel_id-1])}"
-    requested_novel_author = f"{arabic_reshape(df.get('المؤلف')[novel_id-1])}"
-    requested_novel_country = f"{arabic_reshape(df.get('البلد')[novel_id-1])}"
-    return {arabic_reshape("الروايه"): requested_novel_name,
-            arabic_reshape("المؤلف"): requested_novel_author,
-            arabic_reshape("البلد"): requested_novel_country}
+    requested_novel_name = f"{ (df.get('الروايه')[novel_id-1])}"
+    requested_novel_author = f"{ (df.get('المؤلف')[novel_id-1])}"
+    requested_novel_country = f"{ (df.get('البلد')[novel_id-1])}"
+    return { ("الروايه"): requested_novel_name,
+             ("المؤلف"): requested_novel_author,
+             ("البلد"): requested_novel_country}
 
 
 @app.route('/Novel', methods=['POST'])
@@ -85,9 +75,9 @@ def post_novel():
         'Final_without_links.xlsx', engine='xlsxwriter')
     format_excel(writer, df)
 
-    return {arabic_reshape("الروايه"): args['الروايه'],
-            arabic_reshape("المؤلف"): args['المؤلف'],
-            arabic_reshape("البلد"): args['البلد']}, 201
+    return { ("الروايه"): ( args['الروايه']),
+             ("المؤلف"):  (args['المؤلف']),
+             ("البلد"):  (args['البلد'])}, 201
 
 
 @app.route('/Novel/<int:novel_id>', methods=['PUT'])
@@ -102,9 +92,9 @@ def put_novel(novel_id):
         'Final_without_links.xlsx', engine='xlsxwriter')
     format_excel(writer, df)
 
-    return {arabic_reshape("الروايه"): args['الروايه'],
-            arabic_reshape("المؤلف"): args['المؤلف'],
-            arabic_reshape("البلد"): args['البلد']}, 201
+    return { ("الروايه"):  (args['الروايه']),
+             ("المؤلف"):  (args['المؤلف']),
+             ("البلد"):  (args['البلد'])}, 201
 
 
 @app.route('/Novel/<int:novel_id>', methods=['DELETE'])
@@ -119,7 +109,6 @@ def delete_novel(novel_id):
         'Final_without_links.xlsx', engine='xlsxwriter')
     format_excel(writer, df)
     return '', 204
-
 
 if __name__ == "__main__":
     app.run()
