@@ -1,1 +1,1 @@
-web: gunicorn hrefpandas:app --log-file -
+web: gunicorn -b :$PORT app:app
